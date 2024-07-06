@@ -1,0 +1,30 @@
+# This line specifies the base image for your container. 
+# We're using node:18-alpine, a lightweight image containing Node.js version 18.
+FROM node:18-alpine
+
+# Creates a directory named /app inside the container. 
+# The -p flag tells mkdir to create any parent directories that don't exist.
+RUN mkdir -p /app
+
+# Sets the working directory for subsequent commands in the Dockerfile.
+# Now all following commands will be executed relative to /app.
+WORKDIR /app
+
+# Copies the contents of the public directory from your host machine 
+# into the /app directory inside the container.
+COPY public/ /app
+
+# Copies the contents of the src directory from your host machine 
+# into the /app directory inside the container.
+COPY src/ /app
+
+# Copies the package.json file from your host machine 
+# into the /app directory inside the container.
+COPY package.json /app
+
+# Installs dependencies listed in the package.json file using npm.
+RUN npm install
+
+# Defines the default command to run when the container starts.
+# This will execute "npm start" which is typically used to start your Node.js application.  
+CMD ["npm", "start"]
