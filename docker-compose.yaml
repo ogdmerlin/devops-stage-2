@@ -1,56 +1,75 @@
-version: '3'
-
+version: "3.9"
 services:
-  frontend:
-    image: ogdmerlin/hng-stage2:latest  # Replace with your Docker Hub image
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`your-domain.com`)"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
-
-  backend:
-    build: ./backend
-    environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/app_db
-    depends_on:
-      - db
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=(Host(`your-domain.com`) && PathPrefix(`/api`) || PathPrefix(`/docs`))"
-      - "traefik.http.services.backend.loadbalancer.server.port=8000"
-
   db:
-    image: postgres:13
-    environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=app_db
+    image: postgres
+    container_name: db
+    env_file:
+      - ./backend/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_SERVER=db
+      - POSTGRES_USER=og
+      - POSTGRES_PASSWORD=daneen
+      - POSTGRES_DB=ogdb
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "5174:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
 
   adminer:
     image: adminer
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.adminer.rule=Host(`db.your-domain.com`)"
-      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+    container_name: adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
 
-  traefik:
-    image: traefik:v2.5
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
+  proxy:
+    image: "jc21/nginx-proxy-manager:latest"
+    container_name: proxy
+    restart: always
     ports:
       - "80:80"
-      - "8080:8080"
+      - "8090:81"
+      - "443:443"
+    environment:
+      DB_SQLITE_FILE: "/data/database.sqlite"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`proxy.your-domain.com`)"
-      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - ./nginx-data:/data
+      - ./nginx-letsencrypt:/etc/letsencrypt
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
