@@ -487,6 +487,46 @@ sudo docker-compose up -d
 ```
 
 **Step 9**
-
 Reverse Proxying and SSL setup with Nginx proxy manager
-Access the Proxy manager UI by entering http://:81 in your browser, Ensure that port is open in your security group or firewall.
+Access the Proxy manager UI by entering http://<ip_address>:81 in your browser, Ensure that port is open in your security group or firewall.
+Login with the default Admin credentials
+
+```bash
+Email: admin@example.com
+Password: changeme
+```
+
+![Alt text](image-4.png)
+
+Click on Proxy host and setup the proxy for your frontend and backend
+Map your domain name to the service name of your frontend and the port the container is listening on Internally.
+
+![Alt text](image-5.png)
+Click on the SSL tab and request a new certificate
+![Alt text](image-6.png)
+
+Repeat the same process for;
+
+db.domain: to route to your adminer service on port 8080
+proxy.domain: to route to the proxy service UI on port 81
+You don't need to do the advanced setup on the db and proxy domain
+
+![Alt text](image-7.png)
+
+#
+
+**Conclusion**
+
+We have now successfully:
+
+Configured and tested the full stack application locally
+
+Containerized the application
+
+Setup Docker compose
+
+Configured Adminer for Database management
+
+Configured Reverse Proxying with Nginx Proxy Manager
+
+Setup SSL certificates for our domains.
