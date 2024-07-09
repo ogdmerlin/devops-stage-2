@@ -23,18 +23,6 @@ This repository contains a full stack web application with a React frontend, Fas
 
 #
 
-**Table of Contents**
-
-- [Getting Started]()
-- [Requirements](requirement)
-- [Prerequisites](prerequisites)
-- [Installation](installation)
-- [Frontend README](./frontend/README.md)
-- [Backend README](./backend/README.md)
-- [Proxy Manager Setup](./proxy-manager/README.md)
-- [Cloud Deployment README](./cloud-deployment/README.md)
-- [Testing and Evaluation README](./testing-and-evaluation/README.)
-
 **Prerequisites**
 
 - Clone the repository
@@ -383,7 +371,7 @@ networks:
     driver: bridge
 ```
 
-**Step 7**
+**Step 5**
 
 Domain Setup
 We need to setup domains and subdomains for the frontend, adminer service and Nginx proxy manager.
@@ -394,7 +382,7 @@ Remember we are required to route port 80 to both frontend and backend:
 - db.domain - Adminer
 - proxy.domain - Nginx proxy manager
 
-**Step 8**
+**Step 6**
 
 Routing domains using Nginx proxy manager
 We now have everything set up, we can run docker-compose up -d to get our application up and running. We would need to install Docker and Docker-compose first.
@@ -486,7 +474,7 @@ If you get a permission denied error, run is as superuser
 sudo docker-compose up -d
 ```
 
-**Step 9**
+**Step 7**
 Reverse Proxying and SSL setup with Nginx proxy manager
 Access the Proxy manager UI by entering http://<ip_address>:81 in your browser, Ensure that port is open in your security group or firewall.
 Login with the default Admin credentials
@@ -513,7 +501,7 @@ You don't need to do the advanced setup on the db and proxy domain
 
 ![Alt text](image-7.png)
 
-**Step9**
+**Step8**
 
 Setup Adminer
 
