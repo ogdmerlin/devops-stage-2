@@ -1,36 +1,22 @@
-# First stage: Install requirements using poetry
-FROM python:3.9 as requirements-stage
+FROM python:3.11 AS build
 
-WORKDIR /tmp
+WORKDIR /app/backend
+
+COPY pyproject.toml poetry.lock ./
 
 RUN pip install poetry
 
-COPY ./pyproject.toml ./poetry.lock* /tmp/
+RUN poetry config virtualenvs.create false && \
+    poetry install --no-root
 
-# Configure poetry to create the virtual environment within the project directory
-RUN poetry config virtualenvs.in-project true
+COPY . .
 
-RUN poetry install --no-root --no-dev
+RUN pip install sqlalchemy sqlmodel alembic
 
-# Second stage: Build the final image
-FROM python:3.9
+ENV PYTHONPATH=/app/backend
 
-WORKDIR /code
+RUN chmod +x /app/backend/prestart.sh
 
-# Copy the installed virtual environment from the first stage
-COPY --from=requirements-stage /tmp/.venv /code/.venv
+EXPOSE 8000
 
-# Set the PATH to include the virtual environment
-ENV PATH="/code/.venv/bin:$PATH"
-
-# Install uvicorn and other dependencies directly using pip
-RUN pip install --no-cache-dir uvicorn fastapi
-
-# Copy the application code
-COPY ./app /code/app
-
-# Expose port 80
-EXPOSE 80
-
-# Command to run the FastAPI application using uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["sh", "-c", "./prestart.sh && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
