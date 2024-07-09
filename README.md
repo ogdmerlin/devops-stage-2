@@ -513,6 +513,25 @@ You don't need to do the advanced setup on the db and proxy domain
 
 ![Alt text](image-7.png)
 
+**Step9**
+
+Setup Adminer
+
+Access the adminer web interface on `db.<your_domain>.com`
+
+![Alt text](image-8.png)
+Login with the db credentials in your backend .env file
+
+![Alt text](image-9.png)
+
+Access your frontend on `<your_domain>.com`
+
+![Alt text](image-10.png)
+
+Our FullstackApp is now runing and fully set up.
+
+Happy proxying
+
 #
 
 **Conclusion**
