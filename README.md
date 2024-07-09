@@ -399,5 +399,94 @@ Remember we are required to route port 80 to both frontend and backend:
 Routing domains using Nginx proxy manager
 We now have everything set up, we can run docker-compose up -d to get our application up and running. We would need to install Docker and Docker-compose first.
 
-Install Docker
 Update the package list:
+
+```bash
+sudo apt-get update
+```
+
+Install required packages:
+
+```bash
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+```
+
+Add Docker’s official GPG key:
+
+```bash
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+```
+
+Add the Docker repository to APT sources:
+
+```bash
+sudo add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) \
+    stable"
+```
+
+Update the package list again:
+
+```bash
+sudo apt-get update
+```
+
+Install Docker:
+
+```bash
+sudo apt-get install docker-ce
+```
+
+Verify that Docker is installed correctly:
+
+```bash
+docker --version
+sudo systemctl status docker
+```
+
+Install Docker Compose
+Download the latest version of Docker Compose:
+
+```bash
+sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')" /usr/local/bin/docker-compose
+```
+
+Apply executable permissions to the binary:
+
+```bash
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+Verify that Docker Compose is installed correctly:
+
+```bash
+docker-compose --version
+```
+
+Add your user to the docker group:
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+Start the application
+
+```bash
+docker-compose up -d
+```
+
+If you get a permission denied error, run is as superuser
+
+```bash
+sudo docker-compose up -d
+```
+
+**Step 9**
+
+Reverse Proxying and SSL setup with Nginx proxy manager
+Access the Proxy manager UI by entering http://:81 in your browser, Ensure that port is open in your security group or firewall.
